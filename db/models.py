@@ -1,6 +1,7 @@
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey
+from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
 
 Base = declarative_base()
 
@@ -23,3 +24,7 @@ class Weather(Base):
     pressure = Column(Integer)
     wind = Column(Float)
     time = Column(DateTime, server_default=func.now())
+
+
+class User(SQLAlchemyBaseUserTableUUID, Base):
+    pass
