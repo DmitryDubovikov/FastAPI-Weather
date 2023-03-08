@@ -1,5 +1,13 @@
 # FastAPI
 
+## Описание проекта:
+
+тут описание проекта
+
+Используемые технологии: FastAPI, SQLAlchemy, alembic для миграций, asyncpg для асинхронных запросов в PostgreSQL, fastapi_users для аутентификации, Docker, Docker-compose.
+
+## Инструкция по развёртыванию:
+
 Run containers:
 
     docker-compose build
