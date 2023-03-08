@@ -1,3 +1,4 @@
+import uuid
 import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi_users import FastAPIUsers
@@ -14,7 +15,7 @@ async def hello():
     return {"message": "Hello World!"}
 
 
-fastapi_users = FastAPIUsers[User, int](
+fastapi_users = FastAPIUsers[User, uuid.UUID](
     get_user_manager,
     [auth_backend],
 )

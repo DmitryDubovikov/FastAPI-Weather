@@ -1,7 +1,7 @@
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey
-from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
+from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 
 Base = declarative_base()
 

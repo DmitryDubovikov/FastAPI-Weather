@@ -4,7 +4,7 @@ from fastapi_users.authentication import (
     AuthenticationBackend,
 )
 
-cookie_transport = CookieTransport(cookie_max_age=3600)
+cookie_transport = CookieTransport(cookie_name="myapp_cookie", cookie_max_age=3600)
 SECRET = "SECRET"
 
 
