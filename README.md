@@ -25,3 +25,66 @@ Try auth:
     /auth/register - 200
     /auth/jwt/login - 200
     /protected-route - 200
+
+Add cities:
+
+    curl -X 'POST' \
+    'http://127.0.0.1:8000/weather/London' \
+    -H 'accept: application/json' \
+    -d ''
+
+    curl -X 'POST' \
+    'http://127.0.0.1:8000/weather/Paris' \
+    -H 'accept: application/json' \
+    -d ''
+
+    curl -X 'POST' \
+    'http://127.0.0.1:8000/weather/Buenos%20Aires' \
+    -H 'accept: application/json' \
+    -d ''
+
+Add weather data:
+
+    curl -X 'POST' \
+    'http://127.0.0.1:8000/weather/' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "city_id": 1,
+    "temperature": 2.6,
+    "pressure": 760,
+    "wind": 3
+    }'
+
+    curl -X 'POST' \
+    'http://127.0.0.1:8000/weather/' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "city_id": 1,
+    "temperature": 2.8,
+    "pressure": 762,
+    "wind": 4
+    }'
+
+    curl -X 'POST' \
+    'http://127.0.0.1:8000/weather/' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "city_id": 2,
+    "temperature": 4.0,
+    "pressure": 764,
+    "wind": 0
+    }'
+
+    curl -X 'POST' \
+    'http://127.0.0.1:8000/weather/' \
+    -H 'accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "city_id": 2,
+    "temperature": 5.0,
+    "pressure": 766,
+    "wind": 2
+    }'

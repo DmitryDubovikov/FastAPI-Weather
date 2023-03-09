@@ -8,9 +8,7 @@ class CitySchema(BaseModel):
 
 
 class WeatherSchema(BaseModel):
-    name: str
     city_id: int
-    time: datetime
     temperature: float
     pressure: int
     wind: int
