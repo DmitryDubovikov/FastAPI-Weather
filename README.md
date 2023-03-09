@@ -17,6 +17,8 @@ Run in docker:
 
     alembic upgrade heads
 
+Add your SMTP_PASSWORD, SMTP_USER in .env to use email sending.
+
 Try auth:
 
     /unprotected-route - 200

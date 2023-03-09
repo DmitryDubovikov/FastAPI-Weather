@@ -6,6 +6,7 @@ from src.auth.schemas import UserRead, UserCreate
 from src.auth.models import User
 
 from src.weather.router import router as router_weather
+from src.tasks.router import router as router_tasks
 
 app = FastAPI(title="My FastAPI App")
 
@@ -24,6 +25,7 @@ app.include_router(
 )
 
 app.include_router(router_weather)
+app.include_router(router_tasks)
 
 
 @app.get("/protected-route")
