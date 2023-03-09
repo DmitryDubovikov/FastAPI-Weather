@@ -4,7 +4,16 @@
 
 тут описание проекта
 
-Используемые технологии: FastAPI, SQLAlchemy, alembic для миграций, asyncpg для асинхронных запросов в PostgreSQL, fastapi_users для аутентификации, Docker, Docker-compose.
+Используемые технологии: 
+* FastAPI, 
+* SQLAlchemy, 
+* alembic для миграций, 
+* asyncpg для асинхронных запросов в PostgreSQL, 
+* fastapi_users для аутентификации, 
+* Docker, Docker-compose,
+* fastapi background_tasks,
+* Celery,
+* flower,
 
 ## Инструкция по развёртыванию:
 
@@ -90,3 +99,7 @@ Add weather data:
     "pressure": 766,
     "wind": 2
     }'
+
+Flower monitoring:
+
+    http://127.0.0.1:8888/
