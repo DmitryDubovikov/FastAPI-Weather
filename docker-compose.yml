@@ -2,6 +2,10 @@ version: "3.8"
 
 services:
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+
   db:
     container_name: app_pg_db
     image: postgres
@@ -35,3 +39,16 @@ services:
     depends_on:
       - db
     restart: always
+
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A src.tasks.tasks:celery worker --loglevel=INFO
+    volumes:
+      - .:/app
+    container_name: celery
+    depends_on:
+      - db
+      - redis
+      - app
