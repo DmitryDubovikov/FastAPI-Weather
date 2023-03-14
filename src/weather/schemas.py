@@ -6,6 +6,9 @@ class CitySchema(BaseModel):
     # id: int
     name: str
 
+    class Config:
+        orm_mode = True
+
 
 class WeatherSchema(BaseModel):
     city_id: int

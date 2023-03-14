@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,14 +10,18 @@ from .schemas import CitySchema, WeatherSchema
 router = APIRouter(prefix="/weather", tags=["Weather"])
 
 
-@router.get("/")
+@router.get("/cities", response_model=List[CitySchema])
 async def get_cities(session: AsyncSession = Depends(get_async_session)):
     stmt = select(City)
-    result = await session.scalars(stmt)
-    data = []
-    for city in result:
-        data.append({"id": city.id, "name": city.name})
-    return {"cities": data}
+    result = await session.execute(stmt)
+    return result.scalars().all()
+
+
+@router.get("/city/{city_name}", response_model=CitySchema)
+async def get_city(city_name: str, session: AsyncSession = Depends(get_async_session)):
+    stmt = select(City).where(City.name == city_name)
+    result = await session.execute(stmt)
+    return result.scalars().first()
 
 
 @router.post("/{city_name}")

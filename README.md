@@ -7,6 +7,8 @@
 Используемые технологии: 
 * FastAPI, 
 * SQLAlchemy, 
+* raw sql,
+* pydantic для валидации,
 * alembic для миграций, 
 * asyncpg для асинхронных запросов в PostgreSQL, 
 * fastapi_users для аутентификации, 
