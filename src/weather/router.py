@@ -2,6 +2,10 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy import select, insert, text
 from sqlalchemy.ext.asyncio import AsyncSession
+from asyncio import gather
+from aiohttp import ClientSession
+from src.config import API_KEY
+
 
 from src.database import get_async_session
 from .models import City, Weather
@@ -11,6 +15,7 @@ from .schemas import (
     ResponseWeatherSchema,
     ResponseCityStatsSchema,
 )
+
 
 router = APIRouter(prefix="/weather", tags=["Weather"])
 
@@ -38,8 +43,8 @@ async def add_city(city_name: str, session: AsyncSession = Depends(get_async_ses
     return {"status": "success"}
 
 
-@router.post("/")
-async def add_weather(
+@router.post("/add-weather/")
+async def add_weather_manually(
     weather_data: WeatherSchema, session: AsyncSession = Depends(get_async_session)
 ):
     stmt = insert(Weather).values(**weather_data.dict())
@@ -48,7 +53,7 @@ async def add_weather(
     return {"status": "success"}
 
 
-@router.get("/last_weather/", response_model=List[ResponseWeatherSchema])
+@router.get("/last-weather/", response_model=List[ResponseWeatherSchema])
 async def get_last_weather(
     search: str = "", session: AsyncSession = Depends(get_async_session)
 ):
@@ -80,7 +85,7 @@ async def get_last_weather(
     return result.all()
 
 
-@router.get("/city_stats/", response_model=List[ResponseCityStatsSchema])
+@router.get("/city-stats/", response_model=List[ResponseCityStatsSchema])
 async def get_city_stats(
     city_name: str, session: AsyncSession = Depends(get_async_session)
 ):
@@ -103,3 +108,55 @@ async def get_city_stats(
     """
     result = await session.execute(text(qstr))
     return result.all()
+
+
+@router.post("/fetch-weather/")
+async def fetch_weather(session: AsyncSession = Depends(get_async_session)):
+    """
+    Fetch weather data from openweathermap and POST weather (for each city).
+    """
+    stmt = select(City)
+    result = await session.execute(stmt)
+    cities = {el.id: el.name for el in result.scalars().all()}
+    inv_cities = {value: key for key, value in cities.items()}
+
+    async with ClientSession() as client_session:
+
+        data = await gather(
+            *[
+                fetch(
+                    client_session,
+                    f"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&appid="
+                    + API_KEY,
+                    city,
+                )
+                for city in cities.values()
+            ]
+        )
+
+    body = [
+        {
+            "city_id": inv_cities.get(el["city"]),
+            "temperature": el["temperature"],
+            "pressure": el["pressure"],
+            "wind": el["wind"],
+        }
+        for el in data
+    ]
+    print(body)
+
+    await session.execute(insert(Weather), body)
+    await session.commit()
+
+    return {"status": "success"}
+
+
+async def fetch(session, url, city):
+    async with session.get(url) as response:
+        data = await response.json()
+        return {
+            "city": city,
+            "temperature": data["main"]["temp"],
+            "pressure": data["main"]["pressure"],
+            "wind": data["wind"]["speed"],
+        }
