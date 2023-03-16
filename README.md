@@ -16,6 +16,8 @@
 * fastapi background_tasks,
 * Celery,
 * flower,
+* Jinja2Templates,
+* tailwindcss.
 
 ## Инструкция по развёртыванию:
 

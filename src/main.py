@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.staticfiles import StaticFiles
 
 from src.auth.base_config import auth_backend, fastapi_users
 from src.auth.schemas import UserRead, UserCreate
@@ -7,8 +8,11 @@ from src.auth.models import User
 
 from src.weather.router import router as router_weather
 from src.tasks.router import router as router_tasks
+from src.pages.router import router as router_pages
 
 app = FastAPI(title="My FastAPI App")
+
+app.mount("/src/static", StaticFiles(directory="src/static"), name="static")
 
 current_user = fastapi_users.current_user()
 
@@ -26,6 +30,7 @@ app.include_router(
 
 app.include_router(router_weather)
 app.include_router(router_tasks)
+app.include_router(router_pages)
 
 
 @app.get("/protected-route")

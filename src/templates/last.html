@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-center flex-col items-center">
+
+    {% for wd in weather_data %}
+        <div class="flex rounded-3 border-2 p-3 mt-5">
+            <img width="150" src="{{ url_for('static', path='yanet.jpg') }}" alt="Yanet" class="mr-5">
+            <div class="flex flex-col">
+                <span class="text-2xl font-bold">{{ wd[0] }}</span>
+                <span class="text-lg">temperature: {{ wd[1] }}</span>
+                <span class="text-lg">pressure: {{ wd[2] }}</span>
+                <span class="text-lg">wind: {{ wd[3] }}</span>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
