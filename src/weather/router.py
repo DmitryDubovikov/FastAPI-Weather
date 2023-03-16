@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from asyncio import gather
 from aiohttp import ClientSession
 from src.config import API_KEY
+from src.auth.base_config import fastapi_users
 
 
 from src.database import get_async_session
@@ -19,6 +20,8 @@ from .schemas import (
 
 router = APIRouter(prefix="/weather", tags=["Weather"])
 
+current_user = fastapi_users.current_user()
+
 
 @router.get("/cities", response_model=List[CitySchema])
 async def get_cities(session: AsyncSession = Depends(get_async_session)):
@@ -27,15 +30,12 @@ async def get_cities(session: AsyncSession = Depends(get_async_session)):
     return result.scalars().all()
 
 
-@router.get("/city/{city_name}", response_model=CitySchema)
-async def get_city(city_name: str, session: AsyncSession = Depends(get_async_session)):
-    stmt = select(City).where(City.name == city_name)
-    result = await session.execute(stmt)
-    return result.scalars().first()
-
-
 @router.post("/{city_name}")
-async def add_city(city_name: str, session: AsyncSession = Depends(get_async_session)):
+async def add_city(
+    city_name: str,
+    session: AsyncSession = Depends(get_async_session),
+    user=Depends(current_user),
+):
     # TODO: добавить проверку, что город есть в openweathermap
     stmt = insert(City).values(name=city_name)
     await session.execute(stmt)
@@ -43,25 +43,17 @@ async def add_city(city_name: str, session: AsyncSession = Depends(get_async_ses
     return {"status": "success"}
 
 
-@router.post("/add-weather/")
-async def add_weather_manually(
-    weather_data: WeatherSchema, session: AsyncSession = Depends(get_async_session)
-):
-    stmt = insert(Weather).values(**weather_data.dict())
-    await session.execute(stmt)
-    await session.commit()
-    return {"status": "success"}
-
-
 @router.get("/last-weather/", response_model=List[ResponseWeatherSchema])
 async def get_last_weather(
-    search: str = "", session: AsyncSession = Depends(get_async_session)
+    search: str = "",
+    session: AsyncSession = Depends(get_async_session),
+    user=Depends(current_user),
 ):
     """
     Get last (most recent available) weather for each city. Use 'search' parameter to filter among cities.
     """
     qstr = """
-    SELECT city, temperature, pressure, wind, time
+    SELECT city, temperature, pressure, wind, date_trunc('second', time) as time
     FROM
     (SELECT 
             city_id,
@@ -82,12 +74,29 @@ async def get_last_weather(
     else:
         qstr = qstr.replace("AND TRUE", "")
     result = await session.execute(text(qstr))
-    return result.all()
+
+    # TODO: сделать нормальное преобразование, к List[ResponseWeatherSchema]
+    # сейчас можно return result.all(), это сработает при дергании ручки,
+    # но при дергании функции из другой функции возвратится просто список значений без их ключей, а не словарь
+    list_result = []
+    for el in result.all():
+        list_result.append(
+            {
+                "city": el.city,
+                "temperature": el.temperature,
+                "pressure": el.pressure,
+                "wind": el.wind,
+                "time": el.time,
+            }
+        )
+    return list_result
 
 
 @router.get("/city-stats/", response_model=List[ResponseCityStatsSchema])
 async def get_city_stats(
-    city_name: str, session: AsyncSession = Depends(get_async_session)
+    city_name: str,
+    session: AsyncSession = Depends(get_async_session),
+    user=Depends(current_user),
 ):
     """
     Get weather data and average values for 'city_name' city.
@@ -111,7 +120,9 @@ async def get_city_stats(
 
 
 @router.post("/fetch-weather/")
-async def fetch_weather(session: AsyncSession = Depends(get_async_session)):
+async def fetch_weather(
+    session: AsyncSession = Depends(get_async_session), user=Depends(current_user)
+):
     """
     Fetch weather data from openweathermap and POST weather (for each city).
     """

@@ -14,7 +14,7 @@ def get_base_page(request: Request):
 
 
 @router.get("/last-weather/")
-def get_search_page(request: Request, weather_data=Depends(get_last_weather)):
+def get_last_weather_page(request: Request, weather_data=Depends(get_last_weather)):
     return templates.TemplateResponse(
         "last.html", {"request": request, "weather_data": weather_data}
     )

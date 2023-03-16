@@ -9,42 +9,29 @@ SMTP_PORT = 465
 celery = Celery("tasks", broker="redis://redis:6379/0")
 
 
-def get_email_lowest_temperatures(email_to: str):
-    # TODO: refactor in one function
+def get_email_last_weather(weather_data, email_to: str):
     email = EmailMessage()
-    email["Subject"] = "lowest temperatures"
+    email["Subject"] = "last weather"
     email["From"] = SMTP_USER
     email["To"] = email_to
 
     email.set_content(
-        """data""",
+        weather_data,
     )
     return email
 
 
-def get_email_highest_temperatures():
-    # TODO: refactor in one function
-    email = EmailMessage()
-    email["Subject"] = "highest temperatures"
-    email["From"] = SMTP_USER
-    email["To"] = SMTP_USER
-
-    email.set_content(
-        """data""",
-    )
-    return email
-
-
-def send_email_lowest_temperatures(email_to: str):
-    email = get_email_lowest_temperatures(email_to)
-    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
-        server.login(SMTP_USER, SMTP_PASSWORD)
-        server.send_message(email)
+def send_email_last_weather_background_tasks(weather_data, email_to: str):
+    send_email_last_weather(weather_data, email_to)
 
 
 @celery.task
-def send_email_highest_temperatures():
-    email = get_email_highest_temperatures()
+def send_email_last_weather_celery(weather_data, email_to: str):
+    send_email_last_weather(weather_data, email_to)
+
+
+def send_email_last_weather(weather_data, email_to: str):
+    email = get_email_last_weather(weather_data, email_to)
     with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
         server.login(SMTP_USER, SMTP_PASSWORD)
         server.send_message(email)

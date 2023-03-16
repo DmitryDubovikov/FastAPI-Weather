@@ -31,13 +31,3 @@ app.include_router(
 app.include_router(router_weather)
 app.include_router(router_tasks)
 app.include_router(router_pages)
-
-
-@app.get("/protected-route")
-def protected_route(user: User = Depends(current_user)):
-    return f"Hello, {user.email}"
-
-
-@app.get("/unprotected-route")
-def unprotected_route():
-    return f"Hello, unauthenticated user"
