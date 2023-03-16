@@ -49,6 +49,8 @@ User can add cities to DB to track its weather, fetch weather data for tracked c
 
 ## How to run:
 
+Add your SMTP_PASSWORD, SMTP_USER and openweathermap API_KEY in .env file.
+
 Run containers:
 
     docker-compose build
@@ -57,8 +59,6 @@ Run containers:
 Run in docker:    
 
     alembic upgrade heads
-
-Add your SMTP_PASSWORD, SMTP_USER and openweathermap API_KEY in .env file.
 
 To auth:
 
@@ -84,7 +84,7 @@ Fetch weather data for tracked cities from openweathermap for several times:
     -H 'accept: application/json' \
     -d ''
 
-Try to get weather stats and reports via API, email and in frontend as described above.
+Get weather stats and reports via API, email and in frontend as described above.
 
 ![image](https://github.com/DmitryDubovikov/FastAPI/blob/main/browser.jpg)
 
