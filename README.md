@@ -46,7 +46,7 @@ User can add cities to DB to track its weather, fetch weather data for tracked c
 |---------------------------------|--------|----------------------------------------------------------------|
 | /report/last-weather-background | GET    | Get last weather report email (using fastapi background tasks) |
 | /report/last-weather-celery     | GET    | Get last weather report email (using celery tasks)             |
-| /last-weather/                  |        | See last weather in browser                                    |
+| /pages/last-weather/            |        | See last weather in browser                                    |
 
 ## How to run:
 
