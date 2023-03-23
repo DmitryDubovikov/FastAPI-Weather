@@ -16,7 +16,13 @@ def get_email_last_weather(weather_data, email_to: str):
     email["To"] = email_to
 
     email.set_content(
-        weather_data,
+        f"""\
+    Hi!
+
+    Here is last weather data:
+
+    {weather_data}
+    """
     )
     return email
 

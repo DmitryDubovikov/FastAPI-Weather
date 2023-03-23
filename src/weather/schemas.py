@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from pydantic import BaseModel
 
 
@@ -36,7 +37,10 @@ class ResponseCityStatsSchema(BaseModel):
     avg_pressure: int
     wind: int
     avg_wind: int
-    time: datetime
 
     class Config:
         orm_mode = True
+
+
+class ListResponseCityStatsSchema(BaseModel):
+    stats: List[ResponseCityStatsSchema]

@@ -15,9 +15,10 @@ def get_last_weather_email_background(
     weather_data=Depends(get_last_weather),
     user=Depends(current_user),
 ):
-    # TODO: передавать в background_tasks что-то адекватнее, чем str(weather_data)
     background_tasks.add_task(
-        send_email_last_weather_background_tasks, str(weather_data), user.email
+        send_email_last_weather_background_tasks,
+        [el.dict() for el in weather_data],
+        user.email,
     )
     return {"status": 200, "data": "Email sent", "details": "with background_tasks"}
 
@@ -26,6 +27,5 @@ def get_last_weather_email_background(
 def get_last_weather_email_celery(
     weather_data=Depends(get_last_weather), user=Depends(current_user)
 ):
-    # TODO: передавать в celery что-то адекватнее, чем str(weather_data)
-    send_email_last_weather_celery.delay(str(weather_data), user.email)
+    send_email_last_weather_celery.delay([el.dict() for el in weather_data], user.email)
     return {"status": 200, "data": "Email sent", "details": "with celery"}

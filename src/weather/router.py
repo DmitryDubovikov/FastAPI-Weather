@@ -6,6 +6,7 @@ from asyncio import gather
 from aiohttp import ClientSession
 from src.config import API_KEY
 from src.auth.base_config import fastapi_users
+from pydantic import parse_obj_as
 
 
 from src.database import get_async_session
@@ -15,6 +16,7 @@ from .schemas import (
     WeatherSchema,
     ResponseWeatherSchema,
     ResponseCityStatsSchema,
+    ListResponseCityStatsSchema,
 )
 
 
@@ -74,22 +76,8 @@ async def get_last_weather(
     else:
         qstr = qstr.replace("AND TRUE", "")
     result = await session.execute(text(qstr))
-
-    # TODO: сделать нормальное преобразование, к List[ResponseWeatherSchema]
-    # сейчас можно return result.all(), это сработает при дергании ручки,
-    # но при дергании функции из другой функции возвратится просто список значений без их ключей, а не словарь
-    list_result = []
-    for el in result.all():
-        list_result.append(
-            {
-                "city": el.city,
-                "temperature": el.temperature,
-                "pressure": el.pressure,
-                "wind": el.wind,
-                "time": el.time,
-            }
-        )
-    return list_result
+    result_list = result.all()
+    return parse_obj_as(List[ResponseWeatherSchema], result_list)
 
 
 @router.get("/city-stats/", response_model=List[ResponseCityStatsSchema])

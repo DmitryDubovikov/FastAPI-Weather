@@ -17,6 +17,7 @@ User can add cities to DB to track its weather, fetch weather data for tracked c
 * docker, docker-compose for containerization,
 * fastapi background_tasks for background_tasks,
 * celery for background_tasks,
+* redis as datastore and message broker for celery,
 * flower for celery monitoring,
 * Jinja2Templates and tailwindcss for frontend.
 
